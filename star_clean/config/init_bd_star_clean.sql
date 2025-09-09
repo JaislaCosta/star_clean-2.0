@@ -13,6 +13,8 @@ CREATE TABLE clientes (
     cpf VARCHAR(14) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('ATIVO','INATIVO') DEFAULT 'ativo'
 );
 
 -- PRESTADORES
@@ -26,6 +28,8 @@ CREATE TABLE prestadores (
     especialidade VARCHAR(100) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    status ENUM('ATIVO','INATIVO') DEFAULT 'ativo'
 );
 
 -- ADMINISTRADORES
@@ -37,9 +41,11 @@ CREATE TABLE administradores (
     telefone VARCHAR(20) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    status ENUM('ATIVO','INATIVO') DEFAULT 'ativo'
 );
 
--- ENDEREÇOS DOS CLIENTES
+-- ENDEREÇOS DOS CLIENTES E PRESTADORES
 CREATE TABLE enderecos_clientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
@@ -50,22 +56,8 @@ CREATE TABLE enderecos_clientes (
     uf CHAR(2),
     numero VARCHAR(10),
     complemento VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
-);
-
--- ENDEREÇOS DOS PRESTADORES
-CREATE TABLE enderecos_prestadores (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    prestador_id INT NOT NULL,
-    cep VARCHAR(10) NOT NULL,
-    logradouro VARCHAR(150) NOT NULL,
-    bairro VARCHAR(100) NOT NULL,
-    cidade VARCHAR(100) NOT NULL,
-    uf CHAR(2) NOT NULL,
-    numero VARCHAR(20) NOT NULL,
-    complemento VARCHAR(100),
-    FOREIGN KEY (prestador_id) REFERENCES prestadores(id) ON DELETE CASCADE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (cliente_id, prestador_id) REFERENCES clientes(id), prestador(id) ON DELETE CASCADE
 );
 
 -- SERVIÇOS (ligados a prestadores)
