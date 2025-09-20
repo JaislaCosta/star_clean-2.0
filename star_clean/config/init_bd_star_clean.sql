@@ -20,11 +20,11 @@ CREATE TABLE clientes (
 -- PRESTADORES
 CREATE TABLE prestadores (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    sobrenome VARCHAR(100) NOT NULL,
+    nome_razao_social VARCHAR(150) NOT NULL,
+    sobrenome_nome_fantasia VARCHAR(150) NOT NULL,
+    cpf_cnpj VARCHAR(18) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
     telefone VARCHAR(20) NOT NULL,
-    cpf_cnpj VARCHAR(18) NOT NULL UNIQUE,
     especialidade VARCHAR(100) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -38,7 +38,6 @@ CREATE TABLE administradores (
     name VARCHAR(100) NOT NULL,
     sobrenome VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
-    telefone VARCHAR(20) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -46,9 +45,10 @@ CREATE TABLE administradores (
 );
 
 -- ENDEREÇOS DOS CLIENTES E PRESTADORES
-CREATE TABLE enderecos_clientes (
+CREATE TABLE enderecos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
+    prestador_id INT NOT NULL,
     cep VARCHAR(9),
     logradouro VARCHAR(255),
     bairro VARCHAR(100),
@@ -86,15 +86,14 @@ CREATE TABLE agendamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
     servico_id INT NOT NULL,
-    endereco_cliente_id INT,
+    endereco INT,
     data DATE NOT NULL,
     hora TIME NOT NULL,
     status ENUM('pendente', 'realizado', 'cancelado') DEFAULT 'pendente',
     observacoes TEXT,
-    forma_pagamento ENUM('dinheiro', 'cartao_credito', 'pix', 'boleto'),
     FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE,
     FOREIGN KEY (servico_id) REFERENCES servicos(id) ON DELETE CASCADE,
-    FOREIGN KEY (endereco_cliente_id) REFERENCES enderecos_clientes(id) ON DELETE SET NULL
+    FOREIGN KEY (endereco_id) REFERENCES enderecos(id) ON DELETE SET NULL
 );
 
 -- AVALIAÇÕES DE SERVIÇOS
@@ -116,3 +115,4 @@ CREATE TABLE avaliacoes_prestadores (
     FOREIGN KEY (prestador_id) REFERENCES prestadores(id) ON DELETE CASCADE,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
 );
+
